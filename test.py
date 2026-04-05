@@ -24,7 +24,15 @@ traits = [
     "Tasteless","Remorseless","Discouraging","Lazy","Careless","Uncooperative","Insensitive",
     "Irrational","Morbid","Paranoid","Resentful","Pompous","Foolish","Scornful","Slow",
     "Cold","Conceited","One-dimensional","Tactless","Superficial","Unhealthy",
-    "Undisciplined","Uncharitable","Ridiculous","Charmless","Gloomy","Bland"
+    "Undisciplined","Uncharitable","Ridiculous","Charmless","Gloomy","Bland", 
+    "Unimaginative","Sneaky","Petty","Neurotic","Crass","Stingy","Disruptive","Oppressed",
+    "Pretentious","Gullible","Crude","Graceless","Disorderly","Envious","Repressed","Possessive",
+    "Egocentric","Troublesome","Abrasive","Meddlesome","Impractical","Dismissive","Misguided",
+    "Fickle","Naive","Unconvincing","Amoral","Uncreative","Aimless","Coarse","Unreflective",
+    "Insecure","Disorganised","Shameless","Difficult","Unambitious","Short-sighted","Erratic",
+    "Obsessive","Childish","Irritable","Absentminded","Unpolished","Unrealistic","Easily discouraged",
+    "Confused","Disobedient","Submissive","Contradictory","Presumptuous","Rowdy","Moody",
+    "Abrupt","Vulnerable","Mistaken","Rigid","Simple"
 ]
 
 # Add "a ... person" format for CLIP
