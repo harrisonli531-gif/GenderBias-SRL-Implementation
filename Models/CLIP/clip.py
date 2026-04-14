@@ -8,7 +8,7 @@ model = AutoModel.from_pretrained("openai/clip-vit-base-patch32")
 processor = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
 # ---- Load image ----
-image = Image.open("full-length-portrait-cute-woman-gray-wall.jpg").convert("RGB")
+image = Image.open("woman1_original.jpg").convert("RGB")
 
 # ---- Trait list ----
 neg_traits = [
@@ -88,10 +88,13 @@ df = pd.DataFrame({
     "Positive Probability": pos_probs
 })
 
-# ---- Format probabilities to 6 decimals ----
-df["Negative Probability"] = df["Negative Probability"].map("{:.12f}".format)
-df["Positive Probability"] = df["Positive Probability"].map("{:.12f}".format)
+# ---- Format probabilities to 12 decimals ----
+df.to_excel(
+    "clip_trait_similarities_woman1_original.xlsx",
+    index=False,
+    float_format="%.12f"
+)
 
 # ---- Save to Excel ----
-df.to_excel("clip_trait_similarities_full_float.xlsx", index=False)
-print("Results saved to clip_trait_similarities_full_float.xlsx")
+df.to_excel("clip_trait_similarities_woman1_original.xlsx", index=False)
+print("Results saved to clip_trait_similarities_woman1_original.xlsx")
