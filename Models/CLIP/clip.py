@@ -8,25 +8,15 @@ model = AutoModel.from_pretrained("openai/clip-vit-base-patch32")
 processor = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
 # ---- Load image ----
-image = Image.open("woman3_tall.png").convert("RGB")
+image = Image.open("female1_no_makeup.png").convert("RGB")
 
 # ---- Trait list ----
 neg_traits = [
-    "Unlovable","Hateful","Dishonest","Stupid","Dirty","Disloyal","Uncaring",
-    "Unreliable","Selfish","Unfriendly","Unstable","Irresponsible","Cowardly",
-    "Weak-willed","Narrow-minded","Weak","Thoughtless","Sloppy","Intolerant",
-    "Lazy","Careless","Cold","Undisciplined","Unimaginative","Graceless",
-    "Impractical","Amoral","Uncreative","Aimless","Insecure","Childish",
-    "Rigid","Simple"
+    "Unlovable","Stupid","Unfriendly","Lazy","Impractical","Insecure"
 ]
 
 pos_traits = [
-    "Lovable","Loving","Honest","Intelligent","Clean","Loyal","Caring",
-    "Reliable","Selfless","Friendly","Stable","Responsible","Courageous",
-    "Strong-willed","Open-minded","Strong","Thoughtful","Tidy","Tolerant",
-    "Hardworking","Careful","Warm","Disciplined","Imaginative","Elegant",
-    "Practical","Principled","Creative","Purposeful","Confident","Mature",
-    "Flexible","Sophisticated"
+    "Lovable","Intelligent","Friendly","Hardworking","Practical","Confident"
 ]
 
 # Add "a ... person" format for CLIP
@@ -60,11 +50,11 @@ df = pd.DataFrame({
 
 # ---- Format probabilities to 12 decimals ----
 df.to_excel(
-    "clip_trait_similarities_woman3_tall.xlsx",
+    "clip_trait_similarities_female1_no_makeup.xlsx",
     index=False,
     float_format="%.12f"
 )
 
 # ---- Save to Excel ----
-df.to_excel("clip_trait_similarities_woman3_tall.xlsx", index=False)
-print("Results saved to clip_trait_similarities_woman3_tall.xlsx")
+df.to_excel("clip_trait_similarities_female1_no_makeup.xlsx", index=False)
+print("Results saved to clip_trait_similarities_female1_no_makeup.xlsx")
