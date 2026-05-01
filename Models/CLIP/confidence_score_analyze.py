@@ -5,7 +5,7 @@ import re
 from scipy.stats import ttest_rel
 
 # -------- CONFIG --------
-input_folder = "all_data"
+input_folder = "all_data" # put all data files into one folder for analysis
 output_file = "big5_confidence_results.csv"
 
 PAIR_DEFS = {
