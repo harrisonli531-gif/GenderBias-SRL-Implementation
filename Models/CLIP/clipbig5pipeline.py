@@ -35,7 +35,7 @@ def process_image(image_path):
     df["Probability"] = probs.squeeze(0).tolist()
 
     # ---- Output folder setup ----
-    output_dir = "female2" + "data" # change this to the name of the folder with results for each run
+    output_dir = "male1" + "data" # change this to the name of the folder with results for each run
     os.makedirs(output_dir, exist_ok=True)
 
     # ---- Output filename ----
@@ -79,7 +79,7 @@ def process_image(image_path):
 
 
 # ---- Process ALL images in a folder ----
-image_folder = "female2"  # change this to the name of the folder with input images
+image_folder = "male1"  # change this to the name of the folder with input images
 
 for filename in os.listdir(image_folder):
     if filename.lower().endswith((".png", ".jpg", ".jpeg")):
