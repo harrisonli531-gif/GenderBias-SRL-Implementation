@@ -53,7 +53,7 @@ pos_probs = probs[len(neg_traits):]
 # ---- Create DataFrame ----
 df = pd.DataFrame({
     "Negative Trait": neg_traits,
-    "Negative Probability": neg_probs,
+    "Negative Probability": neg_probs,  
     "Positive Trait": pos_traits,
     "Positive Probability": pos_probs
 })

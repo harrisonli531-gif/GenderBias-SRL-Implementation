@@ -9,7 +9,7 @@ model = AutoModel.from_pretrained(model_name)
 processor = AutoProcessor.from_pretrained(model_name)
 
 #load image
-image = Image.open(r"C:\Users\falco\Documents\GitHub\GenderBias-SRL-Implementation\Edited Male\male5_frillyflowerydress.png").convert("RGB")
+image = Image.open(r"C:\Users\falco\Documents\GitHub\GenderBias-SRL-Implementation\Pictures\Female\Modified\woman2\woman2_tall.png").convert("RGB")
 
 #Traits
 neg_traits = ["Unlovable", "Hateful", "Dishonest", "Stupid", "Dirty", "Disloyal", "Uncaring", "Unreliable", "Selfish", "Unfriendly", "Unstable", "Irresponsible", "Cowardly", "Weak-willed", 
@@ -44,15 +44,16 @@ pos_probs = probs[len(neg_traits):]
 
 #Put into excel
 df = pd.DataFrame({
-    "Negative Trait": neg_traits,
-    "Negative Probability": neg_probs,
     "Positive Trait": pos_traits,
-    "Positive Probability": pos_probs
+    "Positive Probability": pos_probs,
+    "Negative Trait": neg_traits,
+    "Negative Probability": neg_probs
+    
 })
 
 #format, save
 df["Negative Probability"] = df["Negative Probability"].map("{:.12f}".format)
 df["Positive Probability"] = df["Positive Probability"].map("{:.12f}".format)
 
-df.to_excel("siglip_out.xlsx", index=False)
-print("Results saved to siglip_out.xlsx")
+df.to_excel("female_siglip_out.xlsx", index=False)
+print("Results saved *happy face*")
