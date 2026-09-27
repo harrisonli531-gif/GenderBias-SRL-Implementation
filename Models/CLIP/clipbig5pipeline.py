@@ -15,6 +15,8 @@ df_master["Prompt"] = df_master["Trait_clean"]
 
 traits = df_master["Prompt"].tolist()
 
+currImagefolderName = "female2"  # change this to the name of the folder (e.g., "female1", "female2") with input images
+
 # ---- Function to process ONE image ----
 def process_image(image_path):
     print(f"Processing: {image_path}")
@@ -35,7 +37,7 @@ def process_image(image_path):
     df["Probability"] = probs.squeeze(0).tolist()
 
     # ---- Output folder setup ----
-    output_dir = "male2" + "data" # change this to the name of the folder (e.g., "female1", "female2") with results for each run
+    output_dir = currImagefolderName + "data" # this is folder with output csv results
     os.makedirs(output_dir, exist_ok=True)
 
     # ---- Output filename ----
@@ -79,7 +81,7 @@ def process_image(image_path):
 
 
 # ---- Process ALL images in a folder ----
-image_folder = "male2"  # change this to the name of the folder with input images
+image_folder = currImagefolderName
 
 for filename in os.listdir(image_folder):
     if filename.lower().endswith((".png", ".jpg", ".jpeg")):
