@@ -10,7 +10,7 @@ model_name = "google/siglip-so400m-patch14-384"
 model = AutoModel.from_pretrained(model_name)
 processor = AutoProcessor.from_pretrained(model_name)
 
-image_dir = Path(r"C:\Users\falco\Documents\GitHub\GenderBias-SRL-Implementation\input")
+image_dir = Path(r"C:\Users\kelvi\OneDrive\Documents\GitHub\GenderBias-SRL-Implementation\input")
 image_extensions = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
 image_paths = sorted(
     img for img in image_dir.rglob("*")
@@ -134,5 +134,5 @@ output["Group"] = pd.Categorical(
 )
 output = output.sort_values(["Group", "Trait"])
 
-output.to_excel("siglip_out_male.xlsx", index=False, float_format="%.12f")
+output.to_excel("siglip_out_female.xlsx", index=False)
 print(f"Results saved for {len(image_paths)} images")
