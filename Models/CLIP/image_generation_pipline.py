@@ -2,72 +2,122 @@ import os
 import csv
 from pathlib import Path
 from PIL import Image
-from google import genai
-from google.genai import types
+import torch
+from transformers import BlipProcessor, BlipForConditionalGeneration
+from diffusers import StableDiffusionPipeline, DPMSolverMultistepScheduler
 
-def setup_pipeline():
-    """Initializes the Gemini client and ensures output directories exist."""
-    # Initialize the client (automatically picks up GEMINI_API_KEY from environment)
-    client = genai.Client()
+def setup_pipeline_directories():
+    """Ensures input and output master folders exist on disk."""
+    input_dir = Path("./input_images")
+    output_master_dir = Path("./output_images")
     
-    # Create an output directory if it doesn't exist
-    output_dir = Path("./output_images")
-    output_dir.mkdir(exist_ok=True)
+    input_dir.mkdir(exist_ok=True)
+    output_master_dir.mkdir(exist_ok=True)
     
-    return client, output_dir
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    print(f"✅ Environment initialized. Compute device: {device.upper()}")
+    return input_dir, output_master_dir, device
 
-def process_pipeline(csv_path: str):
-    """Systematically processes a CSV file containing image paths and prompts."""
-    client, output_dir = setup_pipeline()
-    
-    if not os.path.exists(csv_path):
-        print(f"Error: CSV file not found at {csv_path}")
-        return
-
-    with open(csv_path, mode='r', encoding='utf-8') as file:
-        reader = csv.DictReader(file)
+def run_nested_batch_pipeline():
+    """Processes every image in a folder against every prompt in a CSV with high realism."""
+    try:
+        input_dir, output_master_dir, device = setup_pipeline_directories()
+        csv_path = Path("prompts.csv")
         
-        # Expecting CSV columns: 'input_image_path', 'prompt', 'output_filename'
-        for row in reader:
-            img_path = row['input_image_path']
-            prompt = row['prompt']
-            out_name = row['output_filename']
+        if not csv_path.exists():
+            print(f"❌ Error: The 'prompts.csv' file was not found at {csv_path.resolve()}")
+            return
             
-            print(f"Processing: {out_name}...")
+        # 1. Gather all target image files
+        image_extensions = {'.jpg', '.jpeg', '.png', '.bmp', '.webp'}
+        image_files = [f for f in input_dir.iterdir() if f.suffix.lower() in image_extensions]
+        
+        if not image_files:
+            print(f"⚠️ No images found in '{input_dir.resolve()}'. Please drop some photos in there and re-run!")
+            return
             
-            try:
-                # 1. Load the input image systematically
-                input_image = Image.open(img_path)
+        # 2. Read and cache the list of prompts from the CSV
+        prompts_list = []
+        with open(csv_path, mode='r', encoding='utf-8') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                row_clean = {k.strip(): v.strip() for k, v in row.items() if k is not None}
+                if 'prompt_id' in row_clean and 'prompt' in row_clean:
+                    prompts_list.append({
+                        'id': row_clean['prompt_id'],
+                        'text': row_clean['prompt']
+                    })
                 
-                # 2. Call the Gemini Imagen model for Image-to-Image / Editing
-                # Note: Adjust model and configuration based on your exact use case
-                response = client.models.generate_images(
-                    model='imagen-3.0-generate-002',
-                    prompt=prompt,
-                    config=types.GenerateImagesConfig(
-                        number_of_images=1,
-                        output_mime_type="image/jpeg",
-                        # Pass the source image if doing image-to-image/editing
-                        # person_generation="ALLOW_ADULT", 
+        if not prompts_list:
+            print("⚠️ The prompts.csv file is empty or missing required headers.")
+            return
+
+        print(f"📊 Target Matrix: {len(image_files)} image(s) × {len(prompts_list)} prompt(s) = {len(image_files) * len(prompts_list)} total variations.")
+
+        # 3. Load the ML Engines into system memory
+        print("🧠 Loading local BLIP Vision model...")
+        vision_processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
+        vision_model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base").to(device)
+        
+        print("🤖 Loading photorealistic epiCRealism pipeline...")
+        model_id = "emilianJR/epiCRealism"
+        pipe = StableDiffusionPipeline.from_pretrained(model_id, dtype=torch.float32)
+        pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
+        pipe = pipe.to(device)
+
+        # 4. Outer Loop: Process each image sequentially
+        for img_path in image_files:
+            img_stem = img_path.stem  
+            print(f"\n📂 [STARTING IMAGE GROUP] Processing source picture: {img_path.name}")
+            
+            # Create a dedicated output subdirectory for this specific input picture
+            image_output_folder = output_master_dir / img_stem
+            image_output_folder.mkdir(exist_ok=True)
+            
+            # Step A: Extract visual context from the input picture once
+            raw_image = Image.open(img_path).convert('RGB')
+            inputs = vision_processor(raw_image, return_tensors="pt").to(device)
+            out = vision_model.generate(**inputs, max_new_tokens=20)
+            image_caption = vision_processor.decode(out, skip_special_tokens=True)
+            
+            # 5. Inner Loop: Process every prompt against the current image context
+            for index, prompt_item in enumerate(prompts_list, start=1):
+                p_id = prompt_item['id']
+                user_prompt = prompt_item['text']
+                
+                print(f"  🎬 [{index}/{len(prompts_list)}] Generating realistic variant: '{p_id}'...")
+                
+                try:
+                    # Appended standard high-fidelity rendering tokens for realistic quality weights
+                    refined_prompt = (
+                        f"{user_prompt}, keeping the core geometry layout matching a {image_caption}. "
+                        f"photorealistic, highly detailed face, sharp focus, 8k resolution, studio lighting, masterpiece"
                     )
-                )
+                    
+                    # Render the frame
+                    generator_output = pipe(
+                        refined_prompt, 
+                        num_inference_steps=15
+                    ).images
+                    
+                    # ⚡ FIXED LINE: Safely pull the first generated PIL Image out of the returned list object
+                    final_image = generator_output[0]
+                    
+                    # Save into the dedicated subfolder
+                    final_filename = f"{img_stem}_{p_id}.png"
+                    final_path = image_output_folder / final_filename
+                    final_image.save(final_path)
+                    
+                    print(f"    💾 Saved successfully -> {final_path.resolve()}")
+                    
+                except Exception as inner_err:
+                    print(f"    ❌ Error running prompt '{p_id}': {inner_err}")
+                    print("    Skipping directly to the next variation...")
                 
-                # 3. Extract and save the output systematically
-                for i, generated_image in enumerate(response.generated_images):
-                    image_bytes = generated_image.image.image_bytes
-                    
-                    # Convert bytes back to a PIL Image and save
-                    import io
-                    output_image = Image.open(io.BytesIO(image_bytes))
-                    
-                    final_path = output_dir / f"{out_name}_{i}.jpg"
-                    output_image.save(final_path)
-                    print(f"Saved successfully to {final_path}")
-                    
-            except Exception as e:
-                print(f"Failed to process {img_path} due to error: {e}")
+        print("\n🏁 All nested matrix operations completed successfully with photorealism settings!")
+            
+    except Exception as e:
+        print(f"💥 Batch pipeline matrix execution failed: {e}")
 
 if __name__ == "__main__":
-    # Example usage:
-    # Create a 'pipeline_inputs.csv' with columns: input_image_path, prompt, output_filename
-    process_pipeline("pipeline_inputs.csv")
+    run_nested_batch_pipeline()

@@ -15,7 +15,7 @@ df_master["Prompt"] = df_master["Trait_clean"]
 
 traits = df_master["Prompt"].tolist()
 
-currImagefolderName = "female2"  # change this to the name of the folder (e.g., "female1", "female2") with input images
+currImagefolderName = "female3"  # change this to the name of the folder (e.g., "female1", "female2") with input images
 
 # ---- Function to process ONE image ----
 def process_image(image_path):
