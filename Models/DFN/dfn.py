@@ -14,7 +14,7 @@ model, _, preprocess = open_clip.create_model_and_transforms(model_name)
 tokenizer = open_clip.get_tokenizer(model_name)
 model = model.to(device).eval()
 
-image_dir = Path(r"C:\Users\andre\Docs\School\2026Fall\GenderBias\GenderBias-SRL-Implementation\input")
+image_dir = Path(r"C:\Users\andre\Docs\School\2026Fall\GenderBias\GenderBias-SRL-Implementation\Pictures")
 image_extensions = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
 image_paths = sorted(
     img for img in image_dir.rglob("*")
@@ -136,5 +136,5 @@ output["Group"] = pd.Categorical(
 )
 output = output.sort_values(["Group", "Trait"])
 
-output.to_excel("dfn_out_male.xlsx", index=False, float_format="%.12f")
+output.to_excel("dfn_out.xlsx", index=False, float_format="%.12f")
 print(f"Results saved for {len(image_paths)} images")
