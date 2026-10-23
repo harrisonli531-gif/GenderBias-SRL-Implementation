@@ -24,7 +24,7 @@ import time
 
 import requests
 
-from dotenv import load_dotenv, dotenv_values 
+from dotenv import load_dotenv
 
 # Option 1: paste your key between the quotes below (don't commit/share this file).
 # Option 2: leave it empty and set the environment variable instead:
