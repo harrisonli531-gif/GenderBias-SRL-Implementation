@@ -24,9 +24,14 @@ import time
 
 import requests
 
+from dotenv import load_dotenv, dotenv_values 
+
 # Option 1: paste your key between the quotes below (don't commit/share this file).
 # Option 2: leave it empty and set the environment variable instead:
 #   $env:TAMUS_AI_CHAT_API_KEY = "..."
+
+load_dotenv() 
+
 HARDCODED_API_KEY = ""
 
 API_KEY = HARDCODED_API_KEY or os.environ.get("TAMUS_AI_CHAT_API_KEY", "")
