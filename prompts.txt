@@ -1,5 +1,6 @@
-have_jewerly | Change this person to have jewerly
-no_jewerly | Change this person to no jewerly
-no_makeup | Change this person to no makeup 
-short_hair | Change this person to short hair
+have_makeup | Change this person to have makeup
 long_hair | Change this person to long hair
+have_jewelry | Change this person to have jewelry
+no_makeup | Change this person to no makeup
+short_hair | Change this person to short hair
+no_jewelry | Change this person to no jewelry
