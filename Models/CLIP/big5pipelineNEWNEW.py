@@ -13,10 +13,10 @@ from transformers import AutoProcessor, AutoModel
 MODEL_NAME = "openai/clip-vit-base-patch32"
 
 # Input folder containing physical-trait subfolders
-INPUT_ROOT = r"C:\Users\yuqin\OneDrive - Texas A&M University\Research\genderBias\GenderBias-SRL-Implementation\New Pictures\male"
+INPUT_ROOT = r"C:\Users\yuqin\OneDrive - Texas A&M University\Research\genderBias\GenderBias-SRL-Implementation\New Pictures\female"
 
 # Output folder
-OUTPUT_ROOT = "male_data6_53"
+OUTPUT_ROOT = "female_data6_50"
 
 # Excel file containing Big Five traits
 TRAITS_FILE = "The_Big_Five_traits.xlsx"
